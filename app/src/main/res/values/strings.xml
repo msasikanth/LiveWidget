@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">LiveWidget</string>
+
+    <string name="title_home">Ongoing</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="upcoming">Upcoming</string>
+
+    <string name="json_ulr">https://www.hackerearth.com/api/events/upcoming/?format=json</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="desc">The objective of this hackathon is to extract highly unstructured data and use that information to g..</string>
+    <string name="title">Granular Deep Learning</string>
+
+</resources>

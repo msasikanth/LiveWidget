@@ -1,0 +1,13 @@
+<tabs>
+
+    <tab
+            id="@+id/navigation_home"
+            icon="@drawable/ic_home_black_24dp"
+            title="@string/title_home"/>
+
+    <tab
+            id="@+id/navigation_upcoming"
+            icon="@drawable/ic_access_time"
+            title="@string/upcoming"/>
+
+</tabs>
