@@ -54,11 +54,9 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
         getActivity().getSupportLoaderManager().initLoader(LOADER, null, this);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv_events_list);
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv_events_list_upcoming);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        loading = (ProgressBar) view.findViewById(R.id.pb_loading);
 
         Bundle query = new Bundle();
         query.putString("link", getResources().getString(R.string.json_ulr));
@@ -91,8 +89,6 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                loading.setVisibility(View.VISIBLE);
-                loading.setIndeterminate(true);
                 forceLoad();
             }
 
@@ -200,7 +196,6 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Integer> loader, Integer data) {
 
         if (recyclerView != null) {
-            loading.setVisibility(View.GONE);
             EventsAdapter adapter = new EventsAdapter(getActivity(), eventArrayList);
             recyclerView.setAdapter(adapter);
         }
@@ -211,4 +206,17 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoaderReset(Loader<Integer> loader) {
 
     }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("data", eventArrayList);
+    }
+
 }

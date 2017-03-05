@@ -29,7 +29,7 @@ public class EventHelper extends SQLiteOpenHelper {
                 EventEntry.COLUMN_END_TIMESTAMP + " VARCHAR," +
                 EventEntry.COLUMN_COLLEGE + " VARCHAR," +
                 EventEntry.COLUMN_URL + " VARCHAR," +
-                EventEntry.COLUMND_COVER_IMAGE + " VARCHAR" +
+                EventEntry.COLUMN_COVER_IMAGE + " VARCHAR" +
                 ");";
 
         sqLiteDatabase.execSQL(CREATE_EVENTS_TABLE);

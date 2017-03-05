@@ -30,8 +30,23 @@ public class EventContract {
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_URL = "url";
-        public static final String COLUMND_COVER_IMAGE = "thumbnail";
+        public static final String COLUMN_COVER_IMAGE = "thumbnail";
         public static final String COLUMN_COLLEGE = "college";
+
+        public static final int POSITION_ID = 0;
+
+        public static final String[] QUOTE_COLUMNS = {
+                _ID,
+                COLUMN_TITLE,
+                COLUMN_DESCRIPTION,
+                COLUMN_COLLEGE,
+                COLUMN_START_TIMESTAMP,
+                COLUMN_END_TIMESTAMP,
+                COLUMN_STATUS,
+                COLUMN_URL,
+                COLUMN_COVER_IMAGE,
+                COLUMN_CHALLENGE_TYPE
+        };
 
         public static Uri makeUriForStock(String name) {
             return CONTENT_URI.buildUpon().appendPath(name).build();

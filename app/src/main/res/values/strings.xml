@@ -11,5 +11,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="desc">The objective of this hackathon is to extract highly unstructured data and use that information to g..</string>
     <string name="title">Granular Deep Learning</string>
+    <string name="list_is_empty">Nothing to show</string>
 
 </resources>

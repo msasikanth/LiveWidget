@@ -64,7 +64,6 @@ public class EventProvider extends ContentProvider {
 
         if (id > 0) {
             returnUri = ContentUris.withAppendedId(EventEntry.CONTENT_URI, id);
-            Log.d("database", "Added item to database");
         } else {
             throw new SQLException("Failed to insert" + uri);
         }

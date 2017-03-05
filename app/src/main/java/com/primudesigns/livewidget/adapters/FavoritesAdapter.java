@@ -43,7 +43,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         holder.status.setText(cursor.getString(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_STATUS)));
 
         Picasso.with(context)
-                .load(cursor.getString(cursor.getColumnIndex(EventContract.EventEntry.COLUMND_COVER_IMAGE)))
+                .load(cursor.getString(cursor.getColumnIndex(EventContract.EventEntry.COLUMN_COVER_IMAGE)))
                 .into(holder.cover);
 
 
