@@ -150,7 +150,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             }
         }
 
-        //TODO: Add Favorite function for future
+        //TODO 4: Add Favorite click action for future
 
 //        public View.OnClickListener onFav = new View.OnClickListener() {
 //            @Override

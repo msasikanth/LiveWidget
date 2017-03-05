@@ -16,8 +16,9 @@ import com.primudesigns.livewidget.database.EventContract.EventEntry;
 
 public class EventProvider extends ContentProvider {
 
-    private EventHelper helper;
+    //TODO 5 : CLEAN AND IMPROVE THE CONTENT PROVIDER FOR FUTURE CHANGES
 
+    private EventHelper helper;
 
     @Override
     public boolean onCreate() {

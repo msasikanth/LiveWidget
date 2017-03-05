@@ -8,7 +8,6 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -36,10 +34,13 @@ import java.util.Objects;
 public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCallbacks<Integer> {
 
     private static final int HTTP_OK = 200;
-    private final int LOADER = 14;
+    private static final int HTTP_NOT_OK = 400;
+
+    private static final String URL = "url";
 
     private ArrayList<Event> eventArrayList;
     private RecyclerView recyclerView;
+    private TextView noConnection;
     private ProgressBar loading;
 
     public UpcomingFragment() {
@@ -52,61 +53,61 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
         View view = inflater.inflate(R.layout.fragment_upcoming, container, false);
 
-        getActivity().getSupportLoaderManager().initLoader(LOADER, null, this);
+        int LOADER = 2;
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_events_list_upcoming);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        Bundle query = new Bundle();
-        query.putString("link", getResources().getString(R.string.json_ulr));
+        loading = (ProgressBar) view.findViewById(R.id.pb_loading);
+        noConnection = (TextView) view.findViewById(R.id.tv_no_connection);
 
-        if (savedInstanceState != null) {
+        Bundle queryBundle = new Bundle();
+        queryBundle.putString(URL, getResources().getString(R.string.json_url));
 
-            eventArrayList = savedInstanceState.getParcelableArrayList("data");
-            EventsAdapter adapter = new EventsAdapter(getActivity(), eventArrayList);
-            recyclerView.setAdapter(adapter);
+        LoaderManager loaderManager = getActivity().getSupportLoaderManager();
+        Loader<Integer> runtimeLoader = loaderManager.getLoader(LOADER);
 
+        if (runtimeLoader == null) {
+            loaderManager.initLoader(LOADER, queryBundle, this);
         } else {
-
-            LoaderManager loaderManager = getActivity().getSupportLoaderManager();
-            Loader<JSONObject> runtimeLoader = loaderManager.getLoader(LOADER);
-
-            if (runtimeLoader == null) {
-                loaderManager.initLoader(LOADER, query, this);
-            } else {
-                loaderManager.restartLoader(LOADER, query, this);
-            }
+            loaderManager.restartLoader(LOADER, queryBundle, this);
         }
+
 
         return view;
     }
 
     @Override
     public Loader<Integer> onCreateLoader(int id, final Bundle args) {
-        return new AsyncTaskLoader<Integer>(getActivity()) {
+
+        return new AsyncTaskLoader<Integer>(getContext()) {
 
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
+
+                if (args == null) {
+                    return;
+                }
+
                 forceLoad();
+                loading.setVisibility(View.VISIBLE);
+
             }
 
             @Override
             public Integer loadInBackground() {
-                int result;
+
+                int result = 0;
+
                 JSONObject object = null;
                 HttpURLConnection urlConnection = null;
-                String query = null;
                 String jsonData = "";
 
                 eventArrayList = new ArrayList<>();
 
-                query = args.getString("link");
-
-                if (query == null || TextUtils.isEmpty(query)) {
-                    return null;
-                }
+                String query = args.getString(URL);
 
                 try {
 
@@ -116,7 +117,7 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
                     if (statusCode == HTTP_OK) {
 
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
                         StringBuilder response = new StringBuilder();
                         String line = "";
 
@@ -159,23 +160,23 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
 
                         if (Objects.equals(event.getCollege(), "False") && Objects.equals(event.getStatus(), "UPCOMING")) {
-                            eventArrayList.add(event);
+                            eventArrayList.add(0, event);
                         }
 
                         if (Objects.equals(event1.getCollege(), "False") && Objects.equals(event1.getStatus(), "UPCOMING")) {
-                            eventArrayList.add(event1);
+                            eventArrayList.add(0, event1);
                         }
 
                         if (Objects.equals(event2.getCollege(), "False") && Objects.equals(event2.getStatus(), "UPCOMING")) {
-                            eventArrayList.add(event2);
+                            eventArrayList.add(0, event2);
                         }
 
-                        result = 1;
-                        return result;
+                        result = HTTP_OK;
 
                     } else {
-                        result = 0;
-                        return result;
+
+                        result = HTTP_NOT_OK;
+
                     }
 
 
@@ -187,7 +188,7 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
                     }
                 }
 
-                return null;
+                return result;
             }
         };
     }
@@ -195,9 +196,15 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Integer> loader, Integer data) {
 
-        if (recyclerView != null) {
+        loading.setVisibility(View.INVISIBLE);
+
+        if (data == HTTP_OK) {
+
             EventsAdapter adapter = new EventsAdapter(getActivity(), eventArrayList);
             recyclerView.setAdapter(adapter);
+
+        } else {
+            noConnection.setVisibility(View.VISIBLE);
         }
 
     }
@@ -205,18 +212,6 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Integer> loader) {
 
-    }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("data", eventArrayList);
     }
 
 }

@@ -1,10 +1,10 @@
 package com.primudesigns.livewidget.database;
 
-import com.primudesigns.livewidget.database.EventContract.EventEntry;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.primudesigns.livewidget.database.EventContract.EventEntry;
 
 public class EventHelper extends SQLiteOpenHelper {
 
@@ -29,7 +29,8 @@ public class EventHelper extends SQLiteOpenHelper {
                 EventEntry.COLUMN_END_TIMESTAMP + " VARCHAR," +
                 EventEntry.COLUMN_COLLEGE + " VARCHAR," +
                 EventEntry.COLUMN_URL + " VARCHAR," +
-                EventEntry.COLUMN_COVER_IMAGE + " VARCHAR" +
+                EventEntry.COLUMN_COVER_IMAGE + " VARCHAR," +
+                "UNIQUE(" + EventEntry.COLUMN_TITLE + ") ON CONFLICT REPLACE" +
                 ");";
 
         sqLiteDatabase.execSQL(CREATE_EVENTS_TABLE);

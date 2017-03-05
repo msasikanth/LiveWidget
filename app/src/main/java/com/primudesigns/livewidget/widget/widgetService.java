@@ -3,7 +3,6 @@ package com.primudesigns.livewidget.widget;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
-import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -60,6 +59,7 @@ public class widgetService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int position) {
+
             if (position == AdapterView.INVALID_POSITION || eventCursor == null
                     || !eventCursor.moveToPosition(position)) {
                 return null;
@@ -70,10 +70,22 @@ public class widgetService extends RemoteViewsService {
 
 
             String title = eventCursor.getString(eventCursor.getColumnIndex(EventContract.EventEntry.COLUMN_TITLE));
+            String desc = eventCursor.getString(eventCursor.getColumnIndex(EventContract.EventEntry.COLUMN_DESCRIPTION));
+            String start_time = eventCursor.getString(eventCursor.getColumnIndex(EventContract.EventEntry.COLUMN_START_TIMESTAMP));
+            String end_time = eventCursor.getString(eventCursor.getColumnIndex(EventContract.EventEntry.COLUMN_END_TIMESTAMP));
+            String status = eventCursor.getString(eventCursor.getColumnIndex(EventContract.EventEntry.COLUMN_STATUS));
+            String url = eventCursor.getString(eventCursor.getColumnIndex(EventContract.EventEntry.COLUMN_URL));
 
-            Log.d("title", title);
+            remoteViews.setTextViewText(R.id.tv_event_title_widget, title);
+            remoteViews.setTextViewText(R.id.tv_event_desc_widget, desc);
+            remoteViews.setTextViewText(R.id.tv_event_start_widget, start_time);
+            remoteViews.setTextViewText(R.id.tv_event_end_widget, end_time);
+            remoteViews.setTextViewText(R.id.tv_event_status_widget, status);
 
-            remoteViews.setTextViewText(R.id.tv_event_title_widget, "Granular Deep Learning");
+
+            final Intent fillInIntent = new Intent();
+            fillInIntent.putExtra("url", url);
+            remoteViews.setOnClickFillInIntent(R.id.content_view_widget, fillInIntent);
 
             return remoteViews;
         }

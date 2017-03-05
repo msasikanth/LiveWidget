@@ -7,6 +7,8 @@ import android.view.View;
 
 public class Utils {
 
+    //TODO 2 : ADD A NETWORK CHECK AS A UTIL
+
     public static void showSnackBar(Activity activity, int view, String text, int length) {
         if (activity != null) {
             View layout = activity.findViewById(view);

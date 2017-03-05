@@ -35,11 +35,11 @@ public class FavoritesFragment extends Fragment implements LoaderManager.LoaderC
 
     private FavoritesAdapter adapter;
 
+    //TODO 3 : NEED TO IMPROVE THE INITIAL FAVORITES TAB WITH FAV CHECK
 
     public FavoritesFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

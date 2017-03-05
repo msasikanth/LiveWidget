@@ -9,8 +9,16 @@
             android:id="@+id/pb_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:layout_gravity="center"/>
+
+    <TextView
+            android:id="@+id/tv_no_connection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            android:text="@string/no_internet_connection"/>
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_events_list"

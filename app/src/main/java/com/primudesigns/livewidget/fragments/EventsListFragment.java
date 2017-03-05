@@ -4,7 +4,6 @@ package com.primudesigns.livewidget.fragments;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -18,13 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.primudesigns.livewidget.R;
 import com.primudesigns.livewidget.adapters.EventsAdapter;
 import com.primudesigns.livewidget.database.EventContract;
-import com.primudesigns.livewidget.database.EventHelper;
 import com.primudesigns.livewidget.models.Event;
-import com.primudesigns.livewidget.ui.MainActivity;
 
 import org.json.JSONObject;
 
@@ -42,17 +40,14 @@ import java.util.Objects;
 public class EventsListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Integer> {
 
     private static final int HTTP_OK = 200;
-    private final int LOADER = 14;
+    private static final int HTTP_NOT_OK = 400;
 
     public static final String ACTION_DATA_UPDATED = "com.primudesigns.livewidget.ACTION_DATA_UPDATED";
 
     private ArrayList<Event> eventArrayList;
     private RecyclerView recyclerView;
+    private TextView noConnection;
     private ProgressBar loading;
-    private EventHelper helper;
-
-    private final static String UTF8 = "UTF-8";
-
 
     public EventsListFragment() {
         // Required empty public constructor
@@ -65,35 +60,27 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events, container, false);
 
-        getActivity().getSupportLoaderManager().initLoader(LOADER, null, this);
-
-        helper = new EventHelper(getActivity());
+        int LOADER = 1;
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_events_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         loading = (ProgressBar) view.findViewById(R.id.pb_loading);
+        noConnection = (TextView) view.findViewById(R.id.tv_no_connection);
 
         Bundle query = new Bundle();
-        query.putString("link", getResources().getString(R.string.json_ulr));
+        query.putString("query", getResources().getString(R.string.json_url));
 
-        if (savedInstanceState != null) {
-            loading.setVisibility(View.GONE);
-            eventArrayList = savedInstanceState.getParcelableArrayList("data");
-            EventsAdapter adapter = new EventsAdapter(getActivity(), eventArrayList);
-            recyclerView.setAdapter(adapter);
+        LoaderManager loaderManager = getActivity().getSupportLoaderManager();
+        Loader<Integer> runtimeLoader = loaderManager.getLoader(LOADER);
+
+        if (runtimeLoader == null) {
+            loaderManager.initLoader(LOADER, query, this);
         } else {
-
-            LoaderManager loaderManager = getActivity().getSupportLoaderManager();
-            Loader<JSONObject> runtimeLoader = loaderManager.getLoader(LOADER);
-
-            if (runtimeLoader == null) {
-                loaderManager.initLoader(LOADER, query, this);
-            } else {
-                loaderManager.restartLoader(LOADER, query, this);
-            }
+            loaderManager.restartLoader(LOADER, query, this);
         }
+
 
         return view;
 
@@ -107,25 +94,27 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                loading.setVisibility(View.VISIBLE);
+                if (args == null) {
+                    return;
+                }
+
                 forceLoad();
+                loading.setVisibility(View.VISIBLE);
             }
 
             @Override
             public Integer loadInBackground() {
 
-                SQLiteDatabase database = helper.getWritableDatabase();
-                database.delete(EventContract.EventEntry.TABLE_NAME, null, null);
-
-                int result;
+                int result = 0;
                 JSONObject object = null;
                 HttpURLConnection urlConnection = null;
-                String query = null;
+
+                String query;
                 String jsonData = "";
 
                 eventArrayList = new ArrayList<>();
 
-                query = args.getString("link");
+                query = args.getString("query");
 
                 if (query == null || TextUtils.isEmpty(query)) {
                     return null;
@@ -176,7 +165,7 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
                         event2.setStart_timestamp("Opens at : 03 Mar 2017, 06:30 PM IST'");
                         event2.setEnd_timestamp("Closes on : 05 Mar 2017, 11:00 PM IST");
                         event2.setcover_image("https://hackerearth-media.global.ssl.fastly.net/media/hackathon/lt-infotech-fresher-hiring-challenge/images/cc6d1b6ee6-Hire_LT-07.jpg");
-                        event2.setStatus("ONGOING");
+                        event2.setStatus("UPCOMING");
                         event2.setCollege("False");
                         event2.setUrl("https://www.hackerearth.com/challenge/hiring/lt-infotech-fresher-hiring-challenge/");
 
@@ -190,7 +179,7 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
                                     event.getEnd_timestamp(),
                                     event.getUrl(),
                                     event.getcover_image(),
-                                    event.getCollege() );
+                                    event.getCollege());
                         }
 
                         if (Objects.equals(event1.getCollege(), "False") && Objects.equals(event1.getStatus(), "ONGOING")) {
@@ -202,7 +191,7 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
                                     event1.getEnd_timestamp(),
                                     event1.getUrl(),
                                     event1.getcover_image(),
-                                    event1.getCollege() );
+                                    event1.getCollege());
                         }
 
                         if (Objects.equals(event2.getCollege(), "False") && Objects.equals(event2.getStatus(), "ONGOING")) {
@@ -214,15 +203,13 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
                                     event2.getEnd_timestamp(),
                                     event2.getUrl(),
                                     event2.getcover_image(),
-                                    event2.getCollege() );
+                                    event2.getCollege());
                         }
 
-                        result = 1;
-                        return result;
+                        result = HTTP_OK;
 
                     } else {
-                        result = 0;
-                        return result;
+                        result = HTTP_NOT_OK;
                     }
 
 
@@ -234,7 +221,7 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
                     }
                 }
 
-                return null;
+                return result;
             }
         };
     }
@@ -242,13 +229,19 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onLoadFinished(Loader<Integer> loader, Integer data) {
 
-        if (recyclerView != null) {
+        loading.setVisibility(View.INVISIBLE);
+
+        if (data == HTTP_OK) {
+
+            EventsAdapter adapter = new EventsAdapter(getActivity(), eventArrayList);
+            recyclerView.setAdapter(adapter);
 
             updateWidget(getActivity());
 
-            loading.setVisibility(View.GONE);
-            EventsAdapter adapter = new EventsAdapter(getActivity(), eventArrayList);
-            recyclerView.setAdapter(adapter);
+        } else {
+            if (recyclerView != null) {
+                noConnection.setVisibility(View.VISIBLE);
+            }
         }
 
     }
@@ -258,10 +251,6 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     private void addEvent(String title, String desc, String status, String start_timestamp, String end_timestamp, String url, String cover_image, String college) {
 
@@ -283,9 +272,4 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
         context.sendBroadcast(dataUpdatedIntent);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("data", eventArrayList);
-    }
 }

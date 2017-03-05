@@ -5,12 +5,13 @@
     <string name="title_favorites">Favorites</string>
     <string name="upcoming">Upcoming</string>
 
-    <string name="json_ulr">https://www.hackerearth.com/api/events/upcoming/?format=json</string>
+    <string name="json_url">https://www.hackerearth.com/api/events/upcoming/?format=json</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="desc">The objective of this hackathon is to extract highly unstructured data and use that information to g..</string>
     <string name="title">Granular Deep Learning</string>
     <string name="list_is_empty">Nothing to show</string>
+    <string name="no_internet_connection">NO INTERNET CONNECTION</string>
 
 </resources>

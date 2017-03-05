@@ -6,5 +6,7 @@
     <color name="colorAccent">#F50057</color>
 
     <color name="divider">#E0E0E0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#161616</color>
 
 </resources>

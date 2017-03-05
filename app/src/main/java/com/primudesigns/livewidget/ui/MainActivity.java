@@ -16,7 +16,6 @@ import com.roughike.bottombar.OnTabSelectListener;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding mainBinding;
-    public static BottomBar bottomBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,13 +24,12 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(mainBinding.toolbar);
 
-        bottomBar = mainBinding.bottomBar;
+        //TODO 1 : ADD FAVORITES SECTION IN FUTURE
 
         mainBinding.bottomBar.setDefaultTab(R.id.navigation_home);
         mainBinding.bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-
                 switch (tabId) {
                     case R.id.navigation_home:
                         EventsListFragment eventsListFragment = new EventsListFragment();
