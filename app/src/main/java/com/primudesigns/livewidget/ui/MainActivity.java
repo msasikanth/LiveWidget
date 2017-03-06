@@ -10,7 +10,6 @@ import com.primudesigns.livewidget.R;
 import com.primudesigns.livewidget.databinding.ActivityMainBinding;
 import com.primudesigns.livewidget.fragments.EventsListFragment;
 import com.primudesigns.livewidget.fragments.UpcomingFragment;
-import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setTheme(R.style.AppTheme);
+
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         setSupportActionBar(mainBinding.toolbar);

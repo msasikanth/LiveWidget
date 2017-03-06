@@ -152,10 +152,11 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
 
                             event.setTitle(item.getString(Constants.TITLE));
                             event.setDescription(item.getString(Constants.DESCRIPTION));
-                            event.setStart_timestamp(item.getString(Constants.START_TIME));
-                            event.setEnd_timestamp(item.getString(Constants.END_TIME));
+                            event.setstartTimestamp(item.getString(Constants.START_TIME));
+                            event.setendTimestamp(item.getString(Constants.END_TIME));
                             event.setStatus(item.getString(Constants.STATUS));
                             event.setCollege(item.getString(Constants.COLLEGE));
+                            event.setcoverImage(item.optString(Constants.COVER_IMAGE));
                             event.setUrl(item.getString(Constants.URL));
 
                             if (Objects.equals(event.getCollege(), "false") && Objects.equals(event.getStatus(), "ONGOING")) {
@@ -163,8 +164,8 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
                                 addEvent(event.getTitle(),
                                         event.getDescription(),
                                         event.getStatus(),
-                                        event.getStart_timestamp(),
-                                        event.getEnd_timestamp(),
+                                        event.getstartTimestamp(),
+                                        event.getendTimestamp(),
                                         event.getUrl(),
                                         event.getCollege());
                             }

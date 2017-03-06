@@ -2,22 +2,19 @@ package com.primudesigns.livewidget.adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.primudesigns.livewidget.R;
 import com.primudesigns.livewidget.database.EventContract;
 import com.primudesigns.livewidget.database.EventContract.EventEntry;
 import com.primudesigns.livewidget.models.Event;
-import com.primudesigns.livewidget.utils.Utils;
 import com.primudesigns.plaid.components.AspectImageView;
 import com.primudesigns.plaid.components.BaselineGridTextView;
 import com.squareup.picasso.Picasso;
@@ -95,14 +92,16 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
         holder.title.setText(event.get(position).getTitle());
         holder.description.setText(event.get(position).getDescription());
-        holder.startDate.setText(event.get(position).getStart_timestamp());
-        holder.endDate.setText(event.get(position).getEnd_timestamp());
+        holder.startDate.setText(event.get(position).getstartTimestamp());
+        holder.endDate.setText(event.get(position).getendTimestamp());
         holder.status.setText("STATUS : " + event.get(position).getStatus());
 
-        Picasso.with(context)
-                .load(event.get(position).getCover_image())
-                .placeholder(context.getDrawable(R.drawable.placeholder))
-                .into(holder.cover);
+        if (event.get(position).getcoverImage() != null && !TextUtils.isEmpty(event.get(position).getcoverImage())) {
+            Picasso.with(context)
+                    .load(event.get(position).getcoverImage())
+                    .placeholder(context.getDrawable(R.drawable.placeholder))
+                    .into(holder.cover);
+        }
 
     }
 

@@ -8,7 +8,6 @@ import android.os.Parcelable;
 public class Event implements Parcelable {
 
     private String status;
-    private String challenge_type;
     private String start_timestamp;
     private String end_timestamp;
     private String description;
@@ -22,7 +21,6 @@ public class Event implements Parcelable {
 
     protected Event(Parcel in) {
         status = in.readString();
-        challenge_type = in.readString();
         start_timestamp = in.readString();
         end_timestamp = in.readString();
         description = in.readString();
@@ -57,27 +55,19 @@ public class Event implements Parcelable {
         this.status = status;
     }
 
-    public String getChallenge_type() {
-        return challenge_type;
-    }
-
-    public void setChallenge_type(String challenge_type) {
-        this.challenge_type = challenge_type;
-    }
-
-    public String getStart_timestamp() {
+    public String getstartTimestamp() {
         return start_timestamp;
     }
 
-    public void setStart_timestamp(String start_timestamp) {
+    public void setstartTimestamp(String start_timestamp) {
         this.start_timestamp = start_timestamp;
     }
 
-    public String getEnd_timestamp() {
+    public String getendTimestamp() {
         return end_timestamp;
     }
 
-    public void setEnd_timestamp(String end_timestamp) {
+    public void setendTimestamp(String end_timestamp) {
         this.end_timestamp = end_timestamp;
     }
 
@@ -105,11 +95,11 @@ public class Event implements Parcelable {
         this.url = url;
     }
 
-    public String getCover_image() {
+    public String getcoverImage() {
         return cover_image;
     }
 
-    public void setCover_image(String cover_image) {
+    public void setcoverImage(String cover_image) {
         this.cover_image = cover_image;
     }
 
@@ -124,7 +114,6 @@ public class Event implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(status);
-        parcel.writeString(challenge_type);
         parcel.writeString(start_timestamp);
         parcel.writeString(end_timestamp);
         parcel.writeString(description);

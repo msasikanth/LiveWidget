@@ -137,10 +137,11 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
                             event.setTitle(item.getString(Constants.TITLE));
                             event.setDescription(item.getString(Constants.DESCRIPTION));
-                            event.setStart_timestamp(item.getString(Constants.START_TIME));
-                            event.setEnd_timestamp(item.getString(Constants.END_TIME));
+                            event.setstartTimestamp(item.getString(Constants.START_TIME));
+                            event.setendTimestamp(item.getString(Constants.END_TIME));
                             event.setStatus(item.getString(Constants.STATUS));
                             event.setCollege(item.getString(Constants.COLLEGE));
+                            event.setcoverImage(item.optString(Constants.COVER_IMAGE));
                             event.setUrl(item.getString(Constants.URL));
 
                             if (Objects.equals(event.getStatus(), "UPCOMING")) {

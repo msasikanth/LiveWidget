@@ -12,5 +12,6 @@
     <string name="title">Granular Deep Learning</string>
     <string name="list_is_empty">Nothing to show</string>
     <string name="no_internet_connection">NO INTERNET CONNECTION</string>
+    <string name="ongoing">On Going</string>
 
 </resources>
