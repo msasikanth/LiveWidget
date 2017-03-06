@@ -23,14 +23,16 @@ import com.primudesigns.livewidget.R;
 import com.primudesigns.livewidget.adapters.EventsAdapter;
 import com.primudesigns.livewidget.database.EventContract;
 import com.primudesigns.livewidget.models.Event;
+import com.primudesigns.livewidget.utils.Constants;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -41,6 +43,7 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
 
     private static final int HTTP_OK = 200;
     private static final int HTTP_NOT_OK = 400;
+    private static final String PARAM = "-utf";
 
     public static final String ACTION_DATA_UPDATED = "com.primudesigns.livewidget.ACTION_DATA_UPDATED";
 
@@ -70,7 +73,9 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
         noConnection = (TextView) view.findViewById(R.id.tv_no_connection);
 
         Bundle query = new Bundle();
-        query.putString("query", getResources().getString(R.string.json_url));
+        query.putString("query", getResources().getString(R.string.json_url) + PARAM);
+
+        //TODO 6 : Change to Retrofit for more streamlined DATA FETCHING
 
         LoaderManager loaderManager = getActivity().getSupportLoaderManager();
         Loader<Integer> runtimeLoader = loaderManager.getLoader(LOADER);
@@ -80,7 +85,6 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
         } else {
             loaderManager.restartLoader(LOADER, query, this);
         }
-
 
         return view;
 
@@ -106,7 +110,6 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
             public Integer loadInBackground() {
 
                 int result = 0;
-                JSONObject object = null;
                 HttpURLConnection urlConnection = null;
 
                 String query;
@@ -128,82 +131,43 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
 
                     if (statusCode == HTTP_OK) {
 
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
                         StringBuilder response = new StringBuilder();
                         String line = "";
 
                         while ((line = reader.readLine()) != null) {
                             response.append(line).append("\n");
-                            jsonData = response.toString();
                         }
 
-                        Log.d("json", jsonData);
+                        jsonData = response.toString();
 
-                        Event event = new Event();
-                        event.setTitle(getResources().getString(R.string.title));
-                        event.setDescription(getResources().getString(R.string.desc));
-                        event.setStart_timestamp("Opens at : 20 Jan 2017, 12:00 AM IST");
-                        event.setEnd_timestamp("Closes on : 26 Mar 2017, 11:59 PM IST");
-                        event.setcover_image("https://hackerearth-media.global.ssl.fastly.net/media/hackathon/granular-deep-learning/images/baefd83a-c-hiring_granular-07%20%282%29.jpg");
-                        event.setStatus("ONGOING");
-                        event.setCollege("False");
-                        event.setUrl("https://granular-deep-dive.hackerearth.com");
+                        JSONObject jsonObject = new JSONObject(jsonData);
+                        JSONArray responseArray = jsonObject.getJSONArray("response");
 
-                        Event event1 = new Event();
-                        event1.setTitle("Spark Streaming Innovation Contest");
-                        event1.setDescription("Bring in your passion for Spark and Analytics.\nBuild a Spark Streaming Application and win $10,000!\n..");
-                        event1.setStart_timestamp("Opens at : 08 Feb 2017, 12:00 AM AKDT'");
-                        event1.setEnd_timestamp("Closes on : 1 Mar 2017, 11:59 PM AKDT");
-                        event1.setcover_image("https://hackerearth-media.global.ssl.fastly.net/media/hackathon/spark-streaming-hackathon/images/049d6ebef1-hackathers-banner_8.jpg");
-                        event1.setStatus("ONGOING");
-                        event1.setCollege("False");
-                        event1.setUrl("https://www.hackerearth.com/sprints/spark-streaming-hackathon/");
+                        for (int i = 0; i < responseArray.length(); i++) {
 
-                        Event event2 = new Event();
-                        event2.setTitle("L&T Infotech Fresher Hiring Challenge (2016 Batch)");
-                        event2.setDescription("Must Read- Important form to be filled before the test.  !\nIs programming your passion? Are you wait..");
-                        event2.setStart_timestamp("Opens at : 03 Mar 2017, 06:30 PM IST'");
-                        event2.setEnd_timestamp("Closes on : 05 Mar 2017, 11:00 PM IST");
-                        event2.setcover_image("https://hackerearth-media.global.ssl.fastly.net/media/hackathon/lt-infotech-fresher-hiring-challenge/images/cc6d1b6ee6-Hire_LT-07.jpg");
-                        event2.setStatus("UPCOMING");
-                        event2.setCollege("False");
-                        event2.setUrl("https://www.hackerearth.com/challenge/hiring/lt-infotech-fresher-hiring-challenge/");
+                            JSONObject item = responseArray.optJSONObject(i);
 
+                            Event event = new Event();
 
-                        if (Objects.equals(event.getCollege(), "False") && Objects.equals(event.getStatus(), "ONGOING")) {
-                            eventArrayList.add(0, event);
-                            addEvent(event.getTitle(),
-                                    event.getDescription(),
-                                    event.getStatus(),
-                                    event.getStart_timestamp(),
-                                    event.getEnd_timestamp(),
-                                    event.getUrl(),
-                                    event.getcover_image(),
-                                    event.getCollege());
-                        }
+                            event.setTitle(item.getString(Constants.TITLE));
+                            event.setDescription(item.getString(Constants.DESCRIPTION));
+                            event.setStart_timestamp(item.getString(Constants.START_TIME));
+                            event.setEnd_timestamp(item.getString(Constants.END_TIME));
+                            event.setStatus(item.getString(Constants.STATUS));
+                            event.setCollege(item.getString(Constants.COLLEGE));
+                            event.setUrl(item.getString(Constants.URL));
 
-                        if (Objects.equals(event1.getCollege(), "False") && Objects.equals(event1.getStatus(), "ONGOING")) {
-                            eventArrayList.add(1, event1);
-                            addEvent(event1.getTitle(),
-                                    event1.getDescription(),
-                                    event1.getStatus(),
-                                    event1.getStart_timestamp(),
-                                    event1.getEnd_timestamp(),
-                                    event1.getUrl(),
-                                    event1.getcover_image(),
-                                    event1.getCollege());
-                        }
-
-                        if (Objects.equals(event2.getCollege(), "False") && Objects.equals(event2.getStatus(), "ONGOING")) {
-                            eventArrayList.add(2, event2);
-                            addEvent(event1.getTitle(),
-                                    event2.getDescription(),
-                                    event2.getStatus(),
-                                    event2.getStart_timestamp(),
-                                    event2.getEnd_timestamp(),
-                                    event2.getUrl(),
-                                    event2.getcover_image(),
-                                    event2.getCollege());
+                            if (Objects.equals(event.getCollege(), "false") && Objects.equals(event.getStatus(), "ONGOING")) {
+                                eventArrayList.add(event);
+                                addEvent(event.getTitle(),
+                                        event.getDescription(),
+                                        event.getStatus(),
+                                        event.getStart_timestamp(),
+                                        event.getEnd_timestamp(),
+                                        event.getUrl(),
+                                        event.getCollege());
+                            }
                         }
 
                         result = HTTP_OK;
@@ -252,7 +216,7 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
     }
 
 
-    private void addEvent(String title, String desc, String status, String start_timestamp, String end_timestamp, String url, String cover_image, String college) {
+    private void addEvent(String title, String desc, String status, String start_timestamp, String end_timestamp, String url, String college) {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(EventContract.EventEntry.COLUMN_TITLE, title);
@@ -261,7 +225,6 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
         contentValues.put(EventContract.EventEntry.COLUMN_START_TIMESTAMP, start_timestamp);
         contentValues.put(EventContract.EventEntry.COLUMN_END_TIMESTAMP, end_timestamp);
         contentValues.put(EventContract.EventEntry.COLUMN_URL, url);
-        contentValues.put(EventContract.EventEntry.COLUMN_COVER_IMAGE, cover_image);
         contentValues.put(EventContract.EventEntry.COLUMN_COLLEGE, college);
 
         getContext().getContentResolver().insert(EventContract.EventEntry.CONTENT_URI, contentValues);

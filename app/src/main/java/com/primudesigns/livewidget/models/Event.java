@@ -105,11 +105,11 @@ public class Event implements Parcelable {
         this.url = url;
     }
 
-    public String getcover_image() {
+    public String getCover_image() {
         return cover_image;
     }
 
-    public void setcover_image(String cover_image) {
+    public void setCover_image(String cover_image) {
         this.cover_image = cover_image;
     }
 

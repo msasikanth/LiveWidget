@@ -100,7 +100,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.status.setText("STATUS : " + event.get(position).getStatus());
 
         Picasso.with(context)
-                .load(event.get(position).getcover_image())
+                .load(event.get(position).getCover_image())
+                .placeholder(context.getDrawable(R.drawable.placeholder))
                 .into(holder.cover);
 
     }

@@ -18,7 +18,9 @@ import android.widget.TextView;
 import com.primudesigns.livewidget.R;
 import com.primudesigns.livewidget.adapters.EventsAdapter;
 import com.primudesigns.livewidget.models.Event;
+import com.primudesigns.livewidget.utils.Constants;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -35,8 +37,7 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
     private static final int HTTP_OK = 200;
     private static final int HTTP_NOT_OK = 400;
-
-    private static final String URL = "url";
+    private static final String PARAM = "-utf-8";
 
     private ArrayList<Event> eventArrayList;
     private RecyclerView recyclerView;
@@ -46,7 +47,6 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
     public UpcomingFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
         noConnection = (TextView) view.findViewById(R.id.tv_no_connection);
 
         Bundle queryBundle = new Bundle();
-        queryBundle.putString(URL, getResources().getString(R.string.json_url));
+        queryBundle.putString("link", getResources().getString(R.string.json_url)+ PARAM);
 
         LoaderManager loaderManager = getActivity().getSupportLoaderManager();
         Loader<Integer> runtimeLoader = loaderManager.getLoader(LOADER);
@@ -101,13 +101,12 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
                 int result = 0;
 
-                JSONObject object = null;
                 HttpURLConnection urlConnection = null;
                 String jsonData = "";
 
                 eventArrayList = new ArrayList<>();
 
-                String query = args.getString(URL);
+                String query = args.getString("link");
 
                 try {
 
@@ -123,60 +122,36 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
                         while ((line = reader.readLine()) != null) {
                             response.append(line).append("\n");
-                            jsonData = response.toString();
                         }
 
-                        Log.d("json", jsonData);
+                        jsonData = response.toString();
 
-                        Event event = new Event();
-                        event.setTitle(getResources().getString(R.string.title));
-                        event.setDescription(getResources().getString(R.string.desc));
-                        event.setStart_timestamp("Opens at : 20 Jan 2017, 12:00 AM IST");
-                        event.setEnd_timestamp("Closes on : 26 Mar 2017, 11:59 PM IST");
-                        event.setcover_image("https://hackerearth-media.global.ssl.fastly.net/media/hackathon/granular-deep-learning/images/baefd83a-c-hiring_granular-07%20%282%29.jpg");
-                        event.setStatus("ONGOING");
-                        event.setCollege("False");
-                        event.setUrl("https://granular-deep-dive.hackerearth.com");
+                        JSONObject jsonObject = new JSONObject(jsonData);
+                        JSONArray responseArray = jsonObject.getJSONArray("response");
 
-                        Event event1 = new Event();
-                        event1.setTitle("Spark Streaming Innovation Contest");
-                        event1.setDescription("Bring in your passion for Spark and Analytics.\nBuild a Spark Streaming Application and win $10,000!\n..");
-                        event1.setStart_timestamp("Opens at : 08 Feb 2017, 12:00 AM AKDT'");
-                        event1.setEnd_timestamp("Closes on : 1 Mar 2017, 11:59 PM AKDT");
-                        event1.setcover_image("https://hackerearth-media.global.ssl.fastly.net/media/hackathon/spark-streaming-hackathon/images/049d6ebef1-hackathers-banner_8.jpg");
-                        event1.setStatus("ONGOING");
-                        event1.setCollege("False");
-                        event1.setUrl("https://www.hackerearth.com/sprints/spark-streaming-hackathon/");
+                        for (int i = 0; i < responseArray.length(); i++) {
 
-                        Event event2 = new Event();
-                        event2.setTitle("L&T Infotech Fresher Hiring Challenge (2016 Batch)");
-                        event2.setDescription("Must Read- Important form to be filled before the test.  !\nIs programming your passion? Are you wait..");
-                        event2.setStart_timestamp("Opens at : 03 Mar 2017, 06:30 PM IST'");
-                        event2.setEnd_timestamp("Closes on : 05 Mar 2017, 11:00 PM IST");
-                        event2.setcover_image("https://hackerearth-media.global.ssl.fastly.net/media/hackathon/lt-infotech-fresher-hiring-challenge/images/cc6d1b6ee6-Hire_LT-07.jpg");
-                        event2.setStatus("UPCOMING");
-                        event2.setCollege("False");
-                        event2.setUrl("https://www.hackerearth.com/challenge/hiring/lt-infotech-fresher-hiring-challenge/");
+                            JSONObject item = responseArray.optJSONObject(i);
 
+                            Event event = new Event();
 
-                        if (Objects.equals(event.getCollege(), "False") && Objects.equals(event.getStatus(), "UPCOMING")) {
-                            eventArrayList.add(0, event);
-                        }
+                            event.setTitle(item.getString(Constants.TITLE));
+                            event.setDescription(item.getString(Constants.DESCRIPTION));
+                            event.setStart_timestamp(item.getString(Constants.START_TIME));
+                            event.setEnd_timestamp(item.getString(Constants.END_TIME));
+                            event.setStatus(item.getString(Constants.STATUS));
+                            event.setCollege(item.getString(Constants.COLLEGE));
+                            event.setUrl(item.getString(Constants.URL));
 
-                        if (Objects.equals(event1.getCollege(), "False") && Objects.equals(event1.getStatus(), "UPCOMING")) {
-                            eventArrayList.add(0, event1);
-                        }
-
-                        if (Objects.equals(event2.getCollege(), "False") && Objects.equals(event2.getStatus(), "UPCOMING")) {
-                            eventArrayList.add(0, event2);
+                            if (Objects.equals(event.getStatus(), "UPCOMING")) {
+                                eventArrayList.add(event);
+                            }
                         }
 
                         result = HTTP_OK;
 
                     } else {
-
                         result = HTTP_NOT_OK;
-
                     }
 
 
