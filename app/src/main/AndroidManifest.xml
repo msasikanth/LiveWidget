@@ -23,10 +23,10 @@
 
         <provider
                 android:authorities="com.primudesigns.livewidget"
-                android:name=".database.EventProvider"
+                android:name=".data.EventProvider"
                 android:exported="true"/>
 
-        <receiver android:name=".widget.widgetProvider"
+        <receiver android:name=".ui.widget.widgetProvider"
                 android:label="Live Widget">
 
             <intent-filter>
@@ -39,7 +39,7 @@
                     android:resource="@xml/widget_provider"/>
         </receiver>
 
-        <service android:name=".widget.widgetService"
+        <service android:name=".ui.widget.widgetService"
                  android:exported="false"
                  android:permission="android.permission.BIND_REMOTEVIEWS"/>
 

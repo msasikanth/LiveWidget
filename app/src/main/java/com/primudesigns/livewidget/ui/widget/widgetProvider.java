@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.widget;
+package com.primudesigns.livewidget.ui.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -12,8 +12,8 @@ import android.support.customtabs.CustomTabsIntent;
 import android.widget.RemoteViews;
 
 import com.primudesigns.livewidget.R;
-import com.primudesigns.livewidget.database.EventContract;
-import com.primudesigns.livewidget.fragments.EventsListFragment;
+import com.primudesigns.livewidget.data.EventContract;
+import com.primudesigns.livewidget.ui.fragments.EventsListFragment;
 import com.primudesigns.livewidget.ui.MainActivity;
 
 public class widgetProvider extends AppWidgetProvider {

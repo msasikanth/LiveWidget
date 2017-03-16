@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.fragments;
+package com.primudesigns.livewidget.ui.fragments;
 
 
 import android.content.ContentValues;
@@ -20,18 +20,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.primudesigns.livewidget.R;
-import com.primudesigns.livewidget.adapters.EventsAdapter;
-import com.primudesigns.livewidget.database.EventContract;
+import com.primudesigns.livewidget.config.Config;
+import com.primudesigns.livewidget.config.RemotePoint;
+import com.primudesigns.livewidget.data.EventContract;
+import com.primudesigns.livewidget.models.Constants;
 import com.primudesigns.livewidget.models.Event;
-import com.primudesigns.livewidget.utils.Constants;
+import com.primudesigns.livewidget.ui.adapters.EventsAdapter;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -73,7 +71,7 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
         noConnection = (TextView) view.findViewById(R.id.tv_no_connection);
 
         Bundle query = new Bundle();
-        query.putString("query", getResources().getString(R.string.json_url) + PARAM);
+        query.putString("query", Config.BASE_URL);
 
         //TODO 6 : Change to Retrofit for more streamlined DATA FETCHING
 
@@ -110,8 +108,6 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
             public Integer loadInBackground() {
 
                 int result = 0;
-                HttpURLConnection urlConnection = null;
-
                 String query;
                 String jsonData = "";
 
@@ -125,65 +121,43 @@ public class EventsListFragment extends Fragment implements LoaderManager.Loader
 
                 try {
 
-                    URL url = new URL(query);
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    int statusCode = urlConnection.getResponseCode();
+                    jsonData = RemotePoint.getJsonString(new URL(query));
 
-                    if (statusCode == HTTP_OK) {
+                    JSONObject jsonObject = new JSONObject(jsonData);
+                    JSONArray responseArray = jsonObject.getJSONArray("response");
 
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-                        StringBuilder response = new StringBuilder();
-                        String line = "";
+                    for (int i = 0; i < responseArray.length(); i++) {
 
-                        while ((line = reader.readLine()) != null) {
-                            response.append(line).append("\n");
+                        JSONObject item = responseArray.optJSONObject(i);
+
+                        Event event = new Event();
+
+                        event.setTitle(item.getString(Constants.TITLE));
+                        event.setDescription(item.getString(Constants.DESCRIPTION));
+                        event.setstartTimestamp(item.getString(Constants.START_TIME));
+                        event.setendTimestamp(item.getString(Constants.END_TIME));
+                        event.setStatus(item.getString(Constants.STATUS));
+                        event.setCollege(item.getString(Constants.COLLEGE));
+                        event.setcoverImage(item.optString(Constants.COVER_IMAGE));
+                        event.setUrl(item.getString(Constants.URL));
+
+                        if (Objects.equals(event.getCollege(), "false") && Objects.equals(event.getStatus(), "ONGOING")) {
+                            eventArrayList.add(event);
+                            addEvent(event.getTitle(),
+                                    event.getDescription(),
+                                    event.getStatus(),
+                                    event.getstartTimestamp(),
+                                    event.getendTimestamp(),
+                                    event.getUrl(),
+                                    event.getCollege());
                         }
-
-                        jsonData = response.toString();
-
-                        JSONObject jsonObject = new JSONObject(jsonData);
-                        JSONArray responseArray = jsonObject.getJSONArray("response");
-
-                        for (int i = 0; i < responseArray.length(); i++) {
-
-                            JSONObject item = responseArray.optJSONObject(i);
-
-                            Event event = new Event();
-
-                            event.setTitle(item.getString(Constants.TITLE));
-                            event.setDescription(item.getString(Constants.DESCRIPTION));
-                            event.setstartTimestamp(item.getString(Constants.START_TIME));
-                            event.setendTimestamp(item.getString(Constants.END_TIME));
-                            event.setStatus(item.getString(Constants.STATUS));
-                            event.setCollege(item.getString(Constants.COLLEGE));
-                            event.setcoverImage(item.optString(Constants.COVER_IMAGE));
-                            event.setUrl(item.getString(Constants.URL));
-
-                            if (Objects.equals(event.getCollege(), "false") && Objects.equals(event.getStatus(), "ONGOING")) {
-                                eventArrayList.add(event);
-                                addEvent(event.getTitle(),
-                                        event.getDescription(),
-                                        event.getStatus(),
-                                        event.getstartTimestamp(),
-                                        event.getendTimestamp(),
-                                        event.getUrl(),
-                                        event.getCollege());
-                            }
-                        }
-
-                        result = HTTP_OK;
-
-                    } else {
-                        result = HTTP_NOT_OK;
                     }
+
+                    result = HTTP_OK;
 
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
                 }
 
                 return result;

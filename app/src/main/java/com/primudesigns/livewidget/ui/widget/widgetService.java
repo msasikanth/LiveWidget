@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.widget;
+package com.primudesigns.livewidget.ui.widget;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,7 +8,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.primudesigns.livewidget.R;
-import com.primudesigns.livewidget.database.EventContract;
+import com.primudesigns.livewidget.data.EventContract;
 
 public class widgetService extends RemoteViewsService {
 

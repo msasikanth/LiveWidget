@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.fragments;
+package com.primudesigns.livewidget.ui.fragments;
 
 
 import android.database.Cursor;
@@ -18,8 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.primudesigns.livewidget.R;
-import com.primudesigns.livewidget.adapters.FavoritesAdapter;
-import com.primudesigns.livewidget.database.EventContract;
+import com.primudesigns.livewidget.ui.adapters.FavoritesAdapter;
+import com.primudesigns.livewidget.data.EventContract;
 import com.primudesigns.livewidget.utils.Utils;
 
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.adapters;
+package com.primudesigns.livewidget.ui.adapters;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -9,11 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.primudesigns.livewidget.R;
-import com.primudesigns.livewidget.database.EventContract;
+import com.primudesigns.livewidget.data.EventContract;
 import com.primudesigns.plaid.components.AspectImageView;
 import com.primudesigns.plaid.components.BaselineGridTextView;
 import com.squareup.picasso.Picasso;
-
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.ViewHolder> {
 

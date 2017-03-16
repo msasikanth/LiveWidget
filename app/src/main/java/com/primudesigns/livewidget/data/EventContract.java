@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.database;
+package com.primudesigns.livewidget.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;

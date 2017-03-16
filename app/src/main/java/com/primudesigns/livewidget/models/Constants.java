@@ -1,8 +1,4 @@
-package com.primudesigns.livewidget.utils;
-
-/**
- * Created by sasik on 3/6/2017.
- */
+package com.primudesigns.livewidget.models;
 
 public class Constants {
 

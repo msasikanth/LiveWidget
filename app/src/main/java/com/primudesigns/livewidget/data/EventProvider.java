@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.database;
+package com.primudesigns.livewidget.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.primudesigns.livewidget.database.EventContract.EventEntry;
+import com.primudesigns.livewidget.data.EventContract.EventEntry;
 
 public class EventProvider extends ContentProvider {
 
@@ -34,7 +34,7 @@ public class EventProvider extends ContentProvider {
         final SQLiteDatabase database = helper.getReadableDatabase();
         Cursor cursor;
 
-        cursor = database.query(EventEntry.TABLE_NAME,
+        cursor = database.query(EventContract.EventEntry.TABLE_NAME,
                 projection,
                 selection,
                 selectionARgs,
@@ -59,12 +59,12 @@ public class EventProvider extends ContentProvider {
 
         final SQLiteDatabase database = helper.getWritableDatabase();
 
-        long id = database.insert(EventEntry.TABLE_NAME, null, contentValues);
+        long id = database.insert(EventContract.EventEntry.TABLE_NAME, null, contentValues);
 
         Uri returnUri;
 
         if (id > 0) {
-            returnUri = ContentUris.withAppendedId(EventEntry.CONTENT_URI, id);
+            returnUri = ContentUris.withAppendedId(EventContract.EventEntry.CONTENT_URI, id);
         } else {
             throw new SQLException("Failed to insert" + uri);
         }
@@ -83,9 +83,9 @@ public class EventProvider extends ContentProvider {
             selection = "1";
         }
 
-        String name = EventEntry.getStockFromUri(uri);
-        rowsDeleted = database.delete(EventEntry.TABLE_NAME,
-                '"' + name + '"' + " =" + EventEntry._ID,
+        String name = EventContract.EventEntry.getStockFromUri(uri);
+        rowsDeleted = database.delete(EventContract.EventEntry.TABLE_NAME,
+                '"' + name + '"' + " =" + EventContract.EventEntry._ID,
                 selectionArgs);
 
         if (rowsDeleted != 0) {

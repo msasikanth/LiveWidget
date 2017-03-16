@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.fragments;
+package com.primudesigns.livewidget.ui.fragments;
 
 
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +15,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.primudesigns.livewidget.R;
-import com.primudesigns.livewidget.adapters.EventsAdapter;
+import com.primudesigns.livewidget.config.Config;
+import com.primudesigns.livewidget.config.RemotePoint;
+import com.primudesigns.livewidget.models.Constants;
 import com.primudesigns.livewidget.models.Event;
-import com.primudesigns.livewidget.utils.Constants;
+import com.primudesigns.livewidget.ui.adapters.EventsAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -63,7 +61,7 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
         noConnection = (TextView) view.findViewById(R.id.tv_no_connection);
 
         Bundle queryBundle = new Bundle();
-        queryBundle.putString("link", getResources().getString(R.string.json_url)+ PARAM);
+        queryBundle.putString("link", Config.BASE_URL);
 
         LoaderManager loaderManager = getActivity().getSupportLoaderManager();
         Loader<Integer> runtimeLoader = loaderManager.getLoader(LOADER);
@@ -100,8 +98,6 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
             public Integer loadInBackground() {
 
                 int result = 0;
-
-                HttpURLConnection urlConnection = null;
                 String jsonData = "";
 
                 eventArrayList = new ArrayList<>();
@@ -110,58 +106,36 @@ public class UpcomingFragment extends Fragment implements LoaderManager.LoaderCa
 
                 try {
 
-                    URL url = new URL(query);
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    int statusCode = urlConnection.getResponseCode();
+                    jsonData = RemotePoint.getJsonString(new URL(query));
 
-                    if (statusCode == HTTP_OK) {
+                    JSONObject jsonObject = new JSONObject(jsonData);
+                    JSONArray responseArray = jsonObject.getJSONArray("response");
 
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-                        StringBuilder response = new StringBuilder();
-                        String line = "";
+                    for (int i = 0; i < responseArray.length(); i++) {
 
-                        while ((line = reader.readLine()) != null) {
-                            response.append(line).append("\n");
+                        JSONObject item = responseArray.optJSONObject(i);
+
+                        Event event = new Event();
+
+                        event.setTitle(item.getString(Constants.TITLE));
+                        event.setDescription(item.getString(Constants.DESCRIPTION));
+                        event.setstartTimestamp(item.getString(Constants.START_TIME));
+                        event.setendTimestamp(item.getString(Constants.END_TIME));
+                        event.setStatus(item.getString(Constants.STATUS));
+                        event.setCollege(item.getString(Constants.COLLEGE));
+                        event.setcoverImage(item.optString(Constants.COVER_IMAGE));
+                        event.setUrl(item.getString(Constants.URL));
+
+                        if (Objects.equals(event.getStatus(), "UPCOMING")) {
+                            eventArrayList.add(event);
                         }
-
-                        jsonData = response.toString();
-
-                        JSONObject jsonObject = new JSONObject(jsonData);
-                        JSONArray responseArray = jsonObject.getJSONArray("response");
-
-                        for (int i = 0; i < responseArray.length(); i++) {
-
-                            JSONObject item = responseArray.optJSONObject(i);
-
-                            Event event = new Event();
-
-                            event.setTitle(item.getString(Constants.TITLE));
-                            event.setDescription(item.getString(Constants.DESCRIPTION));
-                            event.setstartTimestamp(item.getString(Constants.START_TIME));
-                            event.setendTimestamp(item.getString(Constants.END_TIME));
-                            event.setStatus(item.getString(Constants.STATUS));
-                            event.setCollege(item.getString(Constants.COLLEGE));
-                            event.setcoverImage(item.optString(Constants.COVER_IMAGE));
-                            event.setUrl(item.getString(Constants.URL));
-
-                            if (Objects.equals(event.getStatus(), "UPCOMING")) {
-                                eventArrayList.add(event);
-                            }
-                        }
-
-                        result = HTTP_OK;
-
-                    } else {
-                        result = HTTP_NOT_OK;
                     }
+
+                    result = HTTP_OK;
 
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
                 }
 
                 return result;

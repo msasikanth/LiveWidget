@@ -1,4 +1,4 @@
-package com.primudesigns.livewidget.adapters;
+package com.primudesigns.livewidget.ui.adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.primudesigns.livewidget.R;
-import com.primudesigns.livewidget.database.EventContract;
-import com.primudesigns.livewidget.database.EventContract.EventEntry;
+import com.primudesigns.livewidget.data.EventContract;
+import com.primudesigns.livewidget.data.EventContract.EventEntry;
 import com.primudesigns.livewidget.models.Event;
 import com.primudesigns.plaid.components.AspectImageView;
 import com.primudesigns.plaid.components.BaselineGridTextView;
@@ -88,7 +88,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(EventsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final EventsAdapter.ViewHolder holder, int position) {
 
         holder.title.setText(event.get(position).getTitle());
         holder.description.setText(event.get(position).getDescription());
@@ -97,6 +97,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.status.setText("STATUS : " + event.get(position).getStatus());
 
         if (event.get(position).getcoverImage() != null && !TextUtils.isEmpty(event.get(position).getcoverImage())) {
+
             Picasso.with(context)
                     .load(event.get(position).getcoverImage())
                     .placeholder(context.getDrawable(R.drawable.placeholder))

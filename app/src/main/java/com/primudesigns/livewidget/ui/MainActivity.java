@@ -8,8 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.primudesigns.livewidget.R;
 import com.primudesigns.livewidget.databinding.ActivityMainBinding;
-import com.primudesigns.livewidget.fragments.EventsListFragment;
-import com.primudesigns.livewidget.fragments.UpcomingFragment;
+import com.primudesigns.livewidget.ui.fragments.EventsListFragment;
+import com.primudesigns.livewidget.ui.fragments.UpcomingFragment;
 import com.roughike.bottombar.OnTabSelectListener;
 
 public class MainActivity extends AppCompatActivity {
